@@ -1,0 +1,47 @@
+JWT Creation-
+*************
+async function(){
+	let token= await jwt.sign(userId,secretKey)
+}
+
+Cookie Creation-
+****************
+  res.cookie('accessToken',token,{
+                expires:new Date(Date.now()+300000),
+                httpOnly:true,
+                secure:false
+                // ,
+                // secure:true
+            })
+
+JWT Verify-
+***********
+
+async(req,res,next)=>{
+	try{
+	const token = req.cookies.token_name;
+	const verifyUser = await jwt.verify(token,process.env.seretkey); 
+
+	}
+	catch(err)
+	{
+	}
+
+}
+
+
+Sign Out-
+*********
+	
+	FOR SINGLE USER
+	---------------
+	req.user.tokens=req.user.tokens.filer((current)=>{return current.token!=current.token})
+
+
+	FOR ALL USER
+	---------------
+	req.user.tokens=[]
+
+	res.clearCookie("Token Name")
+ 
+	await req.user.save()
