@@ -1,0 +1,11 @@
+FirebaseDatabase.DefaultInstance
+            .RootReference
+            .GetValueAsync ()
+            .ContinueWith (task => {
+            DataSnapshot snapshot = task.Result;
+               string JSONfile = saveToJSON(snapshot.GetRawJsonValue());
+});
+
+/////////////////////////////////////////
+
+FirebaseDatabase.DefaultInstance.SetPersistenceEnabled(true);
