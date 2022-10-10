@@ -1,0 +1,38 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.EventSystems;
+
+public class HelperFunctions : MonoBehaviour
+{
+
+    //Waiting for a time duration,use this instead of coroutines to avoid garbage collection
+    private static readonly Dictionary<float, WaitForSeconds> waitDictionary = new Dictionary<float, WaitForSeconds>();
+    public static WaitForSeconds WaitingForTime(float time) { 
+        if(waitDictionary.TryGetValue(time,out var wait))return wait;
+
+        waitDictionary[time] = new WaitForSeconds(time);
+        return waitDictionary[time];    
+    }
+
+
+    //Making a 3D object move according to canvas objects
+    public static Vector2 GetWorldPositionOfCanvasElement(RectTransform element) {
+        RectTransformUtility.ScreenPointToWorldPointInRectangle(element,element.position,Camera.main,out var result);
+        return result;
+    }
+
+
+
+    //Find if some UI item is clicked 
+    private static PointerEventData _eventDataCurrentPosition;
+    public static List<RaycastResult> _result;
+    public static bool IsOverUI() {
+        _eventDataCurrentPosition = new PointerEventData(EventSystem.current) { position = Input.mousePosition };
+        _result = new List<RaycastResult>();
+
+        EventSystem.current.RaycastAll(_eventDataCurrentPosition, _result);
+        return _result.Count > 0;
+
+    }
+}
