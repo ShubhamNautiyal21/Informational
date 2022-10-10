@@ -1,0 +1,2 @@
+cd to sdk\platform-tools
+adb.exe logcat -s Unity
