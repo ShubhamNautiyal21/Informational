@@ -1,0 +1,1459 @@
+Handy Functions
+
+This is for basic movement and jump
+
+
+    using UnityEngine;
+    using System.Collections;
+    public class PlayerScript : MonoBehaviour {public float moveSpeed = 5;
+    public float moveSpeedSmooth = 0.3f;
+    public float rotateSpeeed = 180;
+    public float rotateSpeedSmooth = 0.3f;
+    public float jumpSpeed = 20;
+    public float gravity = 9.8f;
+    
+    float currentForwardSpeed;
+    float forwardSpeedV;
+    
+    float targetRotation;
+    float currentRotation;
+    float rotationV;
+    
+    CharacterController controller;
+    Vector3 currentMovement;
+    
+    void Start ()
+    {
+        controller = GetComponent<CharacterController>();
+    }
+    void Update ()
+    {
+        //transform.Rotate (0, Input.GetAxisRaw ("Horizontal")  rotateSpeeed  Time.deltaTime, 0);
+        targetRotation += Input.GetAxisRaw("Horizontal") + rotateSpeeed * Time.deltaTime;
+        if (targetRotation > 360)
+            targetRotation -= 360;
+        if (targetRotation < 0)
+            targetRotation += 360;
+        currentRotation = Mathf.SmoothDampAngle (currentRotation, targetRotation, ref rotationV, rotateSpeedSmooth);
+        transform.eulerAngles = new Vector3 (0, currentRotation, 0);
+    
+        currentForwardSpeed = Mathf.SmoothDamp (currentForwardSpeed, Input.GetAxisRaw("Vertical") + moveSpeed * Time.deltaTime, ref forwardSpeedV, moveSpeedSmooth);
+    
+        currentMovement = new Vector3 (0, currentMovement.y, currentForwardSpeed);
+        currentMovement = transform.rotation * currentMovement;
+    
+        if (controller.isGrounded == false)
+            currentMovement -= new Vector3 (0, gravity * Time.deltaTime, 0);
+        else
+            currentMovement.y = 0;
+        if (controller.isGrounded &&     Input.GetButtonDown("Jump"))
+            currentMovement.y = jumpSpeed;
+        controller.Move(currentMovement);
+    }
+
+}
+
+----------
+For accessing WebCam in UNITY
+
+
+    public class CameraClass : MonoBehaviour
+    {
+    static WebCamTexture webCamTexture;
+    public Renderer mainRenderer;
+    private void Start()
+    {
+    if (webCamTexture == null)
+    webCamTexture = new WebCamTexture(); mainRenderer.material.mainTexture = webCamTexture;
+    
+        if (!webCamTexture.isPlaying)
+            webCamTexture.Play();
+    
+    }
+    }
+
+link- https://www.e2esoft.com/ivcam/#google_vignette
+
+
+SQLiter-API Name for LocalDatabase
+
+using Mono.Data.SqliteClient;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class DatabaseScript : MonoBehaviour
+{
+string url, sqlQuery;
+
+System.Data.IDbConnection dbconn;
+System.Data.IDbCommand dbcmd;
+
+InputField name;
+InputField id;
+InputField email;
+
+// Use this for initialization
+void Start()
+{
+url = "URI=file:"+"C:/Users/shubham/Desktop/DB/Assets/FirstLocalDb.db";
+
+
+}
+void DataFetcher()
+{
+dbconn = new SqliteConnection(url);
+dbconn.Open(); //Open connection to the database.
+dbcmd = dbconn.CreateCommand();
+sqlQuery = "SELECT * " + "FROM Users";// table name
+dbcmd.CommandText = sqlQuery;
+System.Data.IDataReader reader = dbcmd.ExecuteReader();
+while (reader.Read())
+{
+int id = reader.GetInt32(1);
+string name = reader.GetString(0);
+string Email = reader.GetString(2);
+
+
+Debug.Log("value= " + id + " name =" + name + " Eamil =" + Email );
+}
+reader.Close();
+reader = null;
+dbcmd.Dispose();
+dbcmd = null;
+dbconn.Close();
+dbconn = null;
+
+}
+void DataInserter()
+{
+dbconn = new SqliteConnection(url);
+dbconn.Open();
+dbcmd = dbconn.CreateCommand();
+sqlQuery = string.Format("insert into Users (name, id, emailAddress) values (\"{0}\",\"{1}\",\"{2}\")", name.text, id.text, email.text);// table name
+dbcmd.CommandText = sqlQuery;
+dbcmd.ExecuteScalar();
+dbconn.Close();
+
+
+}
+
+void DataDeleter()
+{
+dbconn = new SqliteConnection(url);
+dbconn.Open(); //Open connection to the database.
+dbcmd = dbconn.CreateCommand();
+sqlQuery = string.Format("Delete from Usersinfo WHERE ID=\"{0}\"", id);// table name
+dbcmd.CommandText = sqlQuery;
+dbcmd.ExecuteScalar();
+dbconn.Close();
+
+}
+}
+
+
+BINARY FORMATTER for saving data locally in a formatted way
+
+
+using System.Runtime.Serialization.Formatters.Binary;
+
+
+FILE_TYPE data=new FILE_TYPE();
+string path = Application.persistentDataPath + "/FairyTaleFile.fun";
+if (File.Exists(path))
+{
+
+
+BinaryFormatter binaryFormatter = new BinaryFormatter();
+
+FileStream stream = new FileStream(path, FileMode.Open);
+binaryFormatter.Serialize(stream, data);
+
+stream.Close();
+
+
+}
+
+
+else
+{
+
+BinaryFormatter binaryFormatter = new BinaryFormatter();
+
+FileStream stream = new FileStream(path, FileMode.Create);
+
+data = new FILE_TYPE();
+binaryFormatter.Serialize(stream, data);
+
+stream.Close();
+
+
+}
+
+Firebase Rest() API Proyecto26-Package Name 
+
+
+RestClient.Put(url: URL_OF_FIREBASE_ACCOUNT + CURRENT_USER_OBJECT_ID_UNIQUE + ".json", CURRENT_USER_OBJECT);
+
+RestClient.Get<CURRENT_USER_OBJECT>(url: URL_OF_FIREBASE_ACCOUNT + CURRENT_USER_OBJECT_ID_UNIQUE + ".json").Then(onResolved: response =>
+
+{
+if (response == null)
+{
+}
+else
+{
+}
+}
+
+);
+
+
+
+//this needs to be tried once
+
+response=>{
+console.log(response);
+
+
+for(let i in response)
+{
+console.log(response[i].Title);
+}
+}
+);
+
+
+
+
+FB SDK
+
+https://developers.facebook.com/docs/unity/gettingstarted
+
+
+
+
+FB Code
+
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using Facebook.Unity;
+using UnityEngine.UI;
+using System;
+public class FacebookScript : MonoBehaviour
+{
+
+    // public GameObject Panel_Add;
+    
+    public Text FB_userName;
+    public Image FB_useerDp;
+    public GameObject friendstxtprefab;
+    public GameObject GetFriendsPos;
+    
+    
+    private static readonly string EVENT_PARAM_SCORE = "score";
+    private static readonly string EVENT_NAME_GAME_PLAYED = "game_played";
+    
+    private void Awake()
+    
+    {
+    
+        // FB.Init(SetInit, onHidenUnity);
+    
+        // Panel_Add.SetActive(false);
+    
+    
+    
+    
+    
+        if (!FB.IsInitialized)
+    
+        {
+    
+            FB.Init(() =>
+    
+            {
+    
+                if (FB.IsInitialized)
+    
+                    FB.ActivateApp();
+    
+                else
+    
+                    Debug.LogError("Couldn't initialize");
+    
+            },
+    
+            isGameShown =>
+    
+            {
+    
+                if (!isGameShown)
+    
+                    Time.timeScale = 0;
+    
+                else
+    
+                    Time.timeScale = 1;
+    
+            });
+    
+        }
+    
+        else
+    
+            FB.ActivateApp();
+    
+    }
+    
+    void SetInit()
+    
+    {
+    
+        if (FB.IsLoggedIn)
+    
+        {
+    
+            Debug.Log("Facebook is Login!");
+    
+        }
+    
+        else
+    
+        {
+    
+            Debug.Log("Facebook is not Logged in!");
+    
+        }
+    
+        DealWithFbMenus(FB.IsLoggedIn);
+    
+    }
+    
+    
+    
+    void onHidenUnity(bool isGameShown)
+    
+    {
+    
+        if (!isGameShown)
+    
+        {
+    
+            Time.timeScale = 0;
+    
+        }
+    
+        else
+    
+        {
+    
+            Time.timeScale = 1;
+    
+        }
+    
+    }
+    
+    public void FBLogin()
+    
+    {
+    
+        List<string> permissions = new List<string>();
+    
+        permissions.Add("public_profile");
+    
+        permissions.Add("user_friends");
+    
+        FB.LogInWithReadPermissions(permissions, AuthCallBack);
+    
+    }
+    
+    
+    
+    public void CallLogout()
+    
+    {
+    
+        StartCoroutine("FBLogout");
+    
+    }
+    
+    IEnumerator FBLogout()
+    
+    {
+    
+        FB.LogOut();
+    
+        while (FB.IsLoggedIn)
+    
+        {
+    
+            print("Logging Out");
+    
+            yield return null;
+    
+        }
+    
+        print("Logout Successful");
+    
+        FB_useerDp.sprite = null;
+    
+        FB_userName.text = "";
+    
+    }
+    
+    
+    
+    
+    
+    public void GetFriendsPlayingThisGame()
+    
+    {
+    
+        string query = "/me/friends";
+    
+        FB.API(query, HttpMethod.GET, result =>
+    
+        {
+    
+            Debug.Log("the raw" + result.RawResult);
+    
+            var dictionary = (Dictionary<string, object>)Facebook.MiniJSON.Json.Deserialize(result.RawResult);
+    
+            var friendsList = (List<object>)dictionary["data"];
+    
+    
+    
+    
+    
+    
+    
+    
+    
+            foreach (var dict in friendsList)
+    
+            {
+    
+    
+    
+                GameObject go = Instantiate(friendstxtprefab);
+    
+                go.GetComponent<Text>().text = ((Dictionary<string, object>)dict)["name"].ToString();
+    
+                go.transform.SetParent(GetFriendsPos.transform, false);
+    
+    
+    
+                //  FriendsText[1].text += ((Dictionary<string, object>)dict)["name"];
+    
+            }
+    
+    
+    
+    
+    
+    
+    
+        });
+    
+    
+    
+    }
+    
+    public void FacebookSharefeed()
+    
+    {
+    
+        string url = "https://developers.facebook.com/docs/unity/reference/current/FB.ShareLink";
+    
+        FB.ShareLink(
+    
+            new Uri(url),
+    
+            "Checkout unity3d teacher channel",
+    
+            "I just watched " + "22" + " times of this channel",
+    
+            null,
+    
+            ShareCallback);
+    
+    
+    
+    }
+    
+    private static void ShareCallback(IShareResult result)
+    
+    {
+    
+        Debug.Log("ShareCallback");
+    
+        SpentCoins(2, "sharelink");
+    
+        if (result.Error != null)
+    
+        {
+    
+            Debug.LogError(result.Error);
+    
+            return;
+    
+        }
+    
+        Debug.Log(result.RawResult);
+    
+    }
+    
+    // Start is called before the first frame update
+    
+    void AuthCallBack(IResult result)
+    
+    {
+    
+        if (result.Error != null)
+    
+        {
+    
+            Debug.Log(result.Error);
+    
+        }
+    
+        else
+    
+        {
+    
+            if (FB.IsLoggedIn)
+    
+            {
+    
+                Debug.Log("Facebook is Login!");
+    
+                // Panel_Add.SetActive(true);
+    
+            }
+    
+            else
+    
+            {
+    
+                Debug.Log("Facebook is not Logged in!");
+    
+            }
+    
+            DealWithFbMenus(FB.IsLoggedIn);
+    
+        }
+    
+    }
+    
+    
+    
+    void DealWithFbMenus(bool isLoggedIn)
+    
+    {
+    
+        if (isLoggedIn)
+    
+        {
+    
+            FB.API("/me?fields=first_name", HttpMethod.GET, DisplayUsername);
+    
+            FB.API("/me/picture?type=square&height=128&width=128", HttpMethod.GET, DisplayProfilePic);
+    
+        }
+    
+        else
+    
+        {
+    
+    
+    
+        }
+    
+    }
+    
+    void DisplayUsername(IResult result)
+    
+    {
+    
+        if (result.Error == null)
+    
+        {
+    
+            string name = "" + result.ResultDictionary["first_name"];
+    
+            FB_userName.text = name;
+    
+    
+    
+            Debug.Log("" + name);
+    
+        }
+    
+        else
+    
+        {
+    
+            Debug.Log(result.Error);
+    
+        }
+    
+    }
+    
+    
+    
+    void DisplayProfilePic(IGraphResult result)
+    
+    {
+    
+        if (result.Texture != null)
+    
+        {
+    
+            Debug.Log("Profile Pic");
+    
+            FB_useerDp.sprite = Sprite.Create(result.Texture, new Rect(0, 0, 128, 128), new Vector2());
+    
+        }
+    
+        else
+    
+        {
+    
+            Debug.Log(result.Error);
+    
+        }
+    
+    }
+    
+    public static void SpentCoins(int coins, string item)
+    
+    {
+    
+        // setup parameters
+    
+        var param = new Dictionary<string, object>();
+    
+        param[AppEventParameterName.ContentID] = item;
+    
+        // log event
+    
+        FB.LogAppEvent(AppEventName.SpentCredits, (float)coins, param);
+    
+    }
+
+}
+
+Line Renderer 
+
+void DrawLine(Vector3 start, Vector3 end, Color color, float duration = 0.2f)
+{
+
+GameObject myLine = new GameObject();
+
+myLine.transform.parent = this.transform;
+
+myLine.AddComponent<LineRenderer>();
+LineRenderer lr = myLine.GetComponent<LineRenderer>();
+
+lr.material = dummyLine.material;
+
+lr.SetColors(color, color);
+
+if(!penType)
+lr.SetWidth(30, 30);
+else
+lr.SetWidth(value, value);
+lr.SetPosition(0, start);
+lr.SetPosition(1, end);
+lr.numCapVertices = 1;
+listOfLines.Add(myLine);
+
+
+}
+
+
+Mouse Functionality
+
+private void OnMouseUp()
+{
+
+
+onClick = false;
+
+records.Add(dicCount++, listOfLines);
+
+}
+
+Vector3 inPos, fnPos;
+private void OnMouseDown()
+{
+inPos = Input.mousePosition;
+onClick = true;
+}
+private void OnMouseOver()
+{
+
+if (onClick)
+{
+fnPos = Input.mousePosition;
+DrawLine(inPos, fnPos, colorMain, 1);
+
+inPos = fnPos;
+}
+
+}
+
+
+To Save SCREENSHOTS in UNITY
+
+IEnumerator CaptureScreenshot()
+{
+yield return new WaitForEndOfFrame();
+//string path = Application.persistentDataPath+"AppData"
+// + "_" + screenshotCount + "_" + Screen.width + "X" + Screen.height + "" + ".png";
+string name = "/" + System.DateTime.Now.TimeOfDay.Hours + System.DateTime.Now.TimeOfDay.Minutes + System.DateTime.Now.TimeOfDay.Seconds + System.DateTime.Now.TimeOfDay.Milliseconds + ".jpg";
+string path = Application.persistentDataPath + name;
+
+Texture2D screenImage = new Texture2D(Screen.width, Screen.height);
+//Get Image from screen
+screenImage.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
+screenImage.Apply();
+//Convert to png
+byte[] imageBytes = screenImage.EncodeToPNG();
+
+//Save image to file
+System.IO.File.WriteAllBytes(path, imageBytes);
+
+}
+
+
+
+UNITY Codeless IAP
+
+
+https://docs.unity3d.com/Manual/UnityIAPCodelessIAP.html
+
+
+
+Spin Wheel Code(Using)
+
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class SpinWheelScript : MonoBehaviour
+{
+public int Value;
+public float Weight;
+public List<AnimationCurve> animationCurves;
+public GameObject PopupPanel;
+public GameObject GameEndPanel;
+public Text prizeText;
+public Text prizeTextgameOver;
+public AdManager AddManager;
+private int Count;
+private bool check = false;
+private string resultStatus;
+[SerializeField]
+Text text1;
+
+public SpinWheelScript(int value, float weight)
+{
+Value = value;
+Weight = weight;
+}
+
+
+public List<WeightedValue> PricesWithWeights;
+
+// seconds one complete rotation shall take
+// adjust in the Inspector
+public float SpinDuration = 5;
+
+// you can't assign this directly since you want it weighted
+List<int> _weightedList;
+
+
+private bool _spinning;
+private float _anglePerItem;
+
+private void Start()
+{
+PricesWithWeights = new List<WeightedValue>
+{
+// Value | Weight TODO: Make sure these sum up to 100
+new WeightedValue(1, 2.5f),
+new WeightedValue(2, 2.5f),
+new WeightedValue(3, 10.0f),
+new WeightedValue(4, 5f),
+new WeightedValue(5, 2.5f),
+new WeightedValue(6, 2.5f),
+new WeightedValue(7, 70.0f),
+new WeightedValue(8, 5f)
+};
+_weightedList = new List<int>();
+//Debug.Log("get: " + PricesWithWeights[0].Weight);
+_spinning = false;
+_anglePerItem = 360f / PricesWithWeights.Count;
+//Debug.Log(_weightedList);
+// first fill the randomResults accordingly to the given wheights
+foreach (var kvp in PricesWithWeights)
+{
+
+// add kvp.Key to the list kvp.value times
+for (var i = 0; i < kvp.Weight; i++)
+{
+//Debug.Log(kvp.Value);
+_weightedList.Add(kvp.Value);
+}
+
+}
+//Debug.Log(_weightedList.Count);
+}
+
+public int GetRandomNumber()
+{
+// get a random inxed from 0 to 99
+var randomIndex = Random.Range(0, _weightedList.Count);
+// get the according value
+int outPut = _weightedList[randomIndex];
+_weightedList.RemoveAt(randomIndex);
+return outPut;
+}
+public void OnClkBtn()
+{
+// spinning is less expensive to check so do it first
+if (_spinning) return;
+
+// how often should the wheel spin before coming to hold
+// time in which spin wheel comes completely at rest
+var randomTime = 16;
+// What you had
+//itemNumber = Random.Range(0, prize.Count);
+// returns a random index .. not the actual value at this index
+var itemNumber = GetRandomNumber();
+
+// find the original index of the selected random value
+// and its angle by multiplying by anglePerItem
+var itemIndex = PricesWithWeights.FindIndex(w => w.Value == itemNumber);
+var itemNumberAngle = itemIndex * _anglePerItem;
+var currentAngle = transform.eulerAngles.z;
+// reset/clamp currentAngle to a value 0-360 since itemNumberAngle will be in this range
+while (currentAngle >= 360)
+{
+currentAngle -= 360;
+}
+while (currentAngle < 0)
+{
+currentAngle += 360;
+}
+
+// Now we can compose the actual total target rotation
+// depends on your setup ofcourse .. For my example below I will use it positive (rotation anti-clockwise) like
+var targetAngle = (itemNumberAngle + 360f * randomTime);
+
+//Debug.Log($"ending at {itemNumber} with an angle of {itemNumberAngle}", this);
+//Debug.Log($"The odds for this were {PricesWithWeights[itemIndex].Weight / 100f:P} !");
+
+// now pass it all on
+StartCoroutine(SpinTheWheel(currentAngle, targetAngle, randomTime * SpinDuration, itemNumber));
+}
+
+
+
+
+// spins the wheel from the given fromAngle until the given toAngle within withinSeconds seconds
+// using an eased in and eased out rotation
+private IEnumerator SpinTheWheel(float fromAngle, float toAngle, float withinSeconds, int result)
+{
+Count += 1;
+//Debug.Log("called");
+_spinning = true;
+
+var passedTime = 0f;
+fromAngle = transform.eulerAngles.z;
+toAngle = toAngle - fromAngle;
+
+// range of animation curve in which you can use different animation curve to show different rotation view .
+// currently same animation curve has been used .
+int animationCurveNumber = Random.Range(0, animationCurves.Count);
+
+while (passedTime < withinSeconds)
+{
+// here you can use any mathematical curve for easing the animation
+// in this case Smoothstep uses a simple ease-in and ease-out
+// so the rotation starts slow, reaches a maximum in the middle and ends slow
+float angle = toAngle * animationCurves[animationCurveNumber].Evaluate(passedTime / withinSeconds);
+
+//var lerpFactor = Mathf.SmoothStep(0, 1, (Mathf.SmoothStep(0, 1, passedTime / withinSeconds)));
+
+transform.localEulerAngles = new Vector3(0.0f, 0.0f, angle + fromAngle);
+passedTime += Time.deltaTime;
+yield return null;
+}
+
+transform.eulerAngles = new Vector3(0.0f, 0.0f, toAngle + fromAngle);
+_spinning = false;
+
+check = true;
+if (result == 1)
+{
+
+}
+else if (result == 2)
+{
+
+}
+else if (result == 3)
+{
+
+}
+else if (result == 4)
+{
+
+}
+else if (result == 5)
+{
+
+}
+else if (result == 6)
+{
+}
+else if (result == 7)
+{
+
+}
+else if (result == 8)
+{
+
+}
+else
+{
+
+}
+
+Debug.Log("Prize: " + result + "and result Status: " + resultStatus);
+
+}
+
+}
+
+
+
+For BACK BUTTON on Devices
+
+if (Input.GetKeyDown(KeyCode.Escape))
+{
+Application.Quit();
+}
+
+
+
+GOOGLE ADMOB
+
+
+Link 1- https://github.com/googleads/googleads-mobile-unity/releases/tag/v5.4.0
+Link 2- https://admob.google.com/home/
+
+
+
+Motion Sensor
+
+Screen.fullScreen = !Screen.fullScreen;
+Screen.sleepTimeout = SleepTimeout.NeverSleep; // to not let the screen sleep
+
+
+    Screen.width;//for current screen/canvas width
+    Screen.height;//for currenr screen/canvas height
+
+Input.acceleration.x ---- for x POS
+Input.acceleration.y ---- for y POS
+
+
+    void MovementOnScreen()
+    {    
+        if (Input.acceleration.x < 0 && !leftNotAllowed)
+        {
+            gameObject.transform.localPosition = new Vector2(gameObject.transform.localPosition.x + Input.acceleration.x * moveX, gameObject.transform.localPosition.y);
+            if (gameObject.transform.localPosition.x < -canavsX)
+            {
+                gameObject.transform.localPosition = new Vector2(-canavsX, gameObject.transform.localPosition.y);
+            }
+    
+        }
+        if (Input.acceleration.x > 0 && !rightNotAllowed)
+        {
+    
+            gameObject.transform.localPosition = new Vector2(gameObject.transform.localPosition.x + Input.acceleration.x * moveX, gameObject.transform.localPosition.y);
+    
+    
+            if (gameObject.transform.localPosition.x > canavsX)
+            {
+                gameObject.transform.localPosition = new Vector2(canavsX, gameObject.transform.localPosition.y);
+            }
+        }
+        if (Input.acceleration.y > 0 && !upNotAllowed)
+        {
+    
+            gameObject.transform.localPosition = new Vector2(gameObject.transform.localPosition.x, gameObject.transform.localPosition.y + Input.acceleration.y * moveY);
+            if (gameObject.transform.localPosition.y > canvasY)
+            {
+                gameObject.transform.localPosition = new Vector2(gameObject.transform.localPosition.x, canvasY);
+            }
+        }
+        if (Input.acceleration.y < 0 && !downNotAllowed)
+        {
+    
+            gameObject.transform.localPosition = new Vector2(gameObject.transform.localPosition.x, gameObject.transform.localPosition.y + Input.acceleration.y * moveY);
+            if (gameObject.transform.localPosition.y < -canvasY)
+            {
+                gameObject.transform.localPosition = new Vector2(gameObject.transform.localPosition.x, -canvasY);
+            }
+        }
+    
+    }
+
+
+      
+    void MovementChecker()
+    {
+      if (gameObject.transform.localPosition.x <= -canavsX)
+        {
+            leftNotAllowed = true;
+        }
+        else
+        {
+            leftNotAllowed = false;
+        }
+        if (gameObject.transform.localPosition.x >= canavsX)
+        {
+            rightNotAllowed = true;
+        }
+        else
+        {
+            rightNotAllowed = false;
+        }
+        if (gameObject.transform.localPosition.y >= canvasY)
+        {
+            upNotAllowed = true;
+        }
+        else
+        {
+            upNotAllowed = false;
+        }
+        if (gameObject.transform.localPosition.y <= -canvasY)
+        {
+            downNotAllowed = true;
+        }
+        else
+        {
+            downNotAllowed = false;
+        }
+    
+    }
+To Remove from Play Mode in UNITY
+
+UnityEditor.EditorApplication.isPlaying = false;
+
+
+
+UNITY Native Share
+
+Link -https://github.com/yasirkula/UnityNativeShare
+
+new NativeShare().SetText("Hello world!").Share(); //on click 
+
+
+Timer
+
+[SerializeField]
+Text timer;
+float gameTimer;
+float timerValue;
+bool startGame;
+string t;
+private void Start()
+{
+gameTimer = float.Parse(timer.text);
+startGame = true;
+}
+private void Update()
+{
+if (startGame)
+{
+gameTimer -= Time.deltaTime;
+gameTimer = gameTimer;
+t = gameTimer.ToString();
+t = t.Split('.')[0];
+timer.text = t;
+
+            if (int.Parse(timer.text.ToString()) <= 0)
+            {
+                startGame = false;
+    
+            }
+        }
+    
+    }
+
+
+
+Inheritance
+
+ Use virtual keyword for parent’s functions and override for child functions for overriding.
+ base.functionName(); //to call parent’s function
+ 
+
+ Scriptable Objects
+
+ 
+  -[CreateAssetMenu(fileName = "1", menuName = "AScriptableObject")]
+  -derive class from :ScriptableObject
+  
+
+HTTP requests in c#
+
+The `WWW` API should get this done but `UnityWebRequest` replaced it so I will answer the newer API. It's really simple. You have to use coroutine to do this with Unity's API otherwise you have have to use one of C# standard web request API and Thread. With coroutine you can yield the request until it is done. This will not block the main Thread or prevent other scripts from running.
+Note:
+For the examples below, if you are using anything below Unity 2017.2, replace `SendWebRequest()` with `Send()` and then replace `isNetworkError` with `isError`. This will then work for the lower version of Unity. Also, if you need to access the downloaded data in a binary form instead, replace `uwr.downloadHandler.text` with `uwr.downloadHandler.data`. Finally, the `SetRequestHeader` function is used to set the header of the request.
+GET request:
+
+    void Start()
+    {
+        StartCoroutine(getRequest("http:///www.yoururl.com"));
+    }
+    
+    IEnumerator GetRequest(string uri)
+    {
+        UnityWebRequest uwr = UnityWebRequest.Get(uri);
+        yield return uwr.SendWebRequest();
+    
+        if (uwr.isNetworkError)
+        {
+            Debug.Log("Error While Sending: " + uwr.error);
+        }
+        else
+        {
+            Debug.Log("Received: " + uwr.downloadHandler.text);
+        }
+    }
+----------
+
+POST request with Form:
+
+    void Start()
+    {
+        StartCoroutine(postRequest("http:///www.yoururl.com"));
+    }
+    
+    IEnumerator PostRequest(string url)
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("myField", "myData");
+        form.AddField("Game Name", "Mario Kart");
+    
+        UnityWebRequest uwr = UnityWebRequest.Post(url, form);
+        yield return uwr.SendWebRequest();
+    
+        if (uwr.isNetworkError)
+        {
+            Debug.Log("Error While Sending: " + uwr.error);
+        }
+        else
+        {
+            Debug.Log("Received: " + uwr.downloadHandler.text);
+        }
+    }
+----------
+
+POST request with Json:
+
+     void Start()
+     {
+         StartCoroutine(postRequest("http:///www.yoururl.com", "your json"));
+     }
+    
+     IEnumerator PostRequest(string url, string json)
+     {
+         var uwr = new UnityWebRequest(url, "POST");
+         byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
+         uwr.uploadHandler = (UploadHandler)new UploadHandlerRaw(jsonToSend);
+         uwr.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
+         uwr.SetRequestHeader("Content-Type", "application/json");
+    
+         //Send the request then wait here until it returns
+         yield return uwr.SendWebRequest();
+    
+         if (uwr.isNetworkError)
+         {
+             Debug.Log("Error While Sending: " + uwr.error);
+         }
+         else
+         {
+             Debug.Log("Received: " + uwr.downloadHandler.text);
+         }
+     }
+----------
+
+POST request with Multipart FormData/Multipart Form File:
+
+    void Start()
+    {
+        StartCoroutine(postRequest("http:///www.yoururl.com"));
+    }
+    
+    IEnumerator PostRequest(string url)
+    {
+        List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
+        formData.Add(new MultipartFormDataSection("field1=foo&field2=bar"));
+        formData.Add(new MultipartFormFileSection("my file data", "myfile.txt"));
+    
+        UnityWebRequest uwr = UnityWebRequest.Post(url, formData);
+        yield return uwr.SendWebRequest();
+    
+        if (uwr.isNetworkError)
+        {
+            Debug.Log("Error While Sending: " + uwr.error);
+        }
+        else
+        {
+            Debug.Log("Received: " + uwr.downloadHandler.text);
+        }
+    }
+----------
+
+PUT request:
+
+    void Start()
+    {
+        StartCoroutine(putRequest("http:///www.yoururl.com"));
+    }
+    
+    IEnumerator PutRequest(string url)
+    {
+        byte[] dataToPut = System.Text.Encoding.UTF8.GetBytes("Hello, This is a test");
+        UnityWebRequest uwr = UnityWebRequest.Put(url, dataToPut);
+        yield return uwr.SendWebRequest();
+    
+        if (uwr.isNetworkError)
+        {
+            Debug.Log("Error While Sending: " + uwr.error);
+        }
+        else
+        {
+            Debug.Log("Received: " + uwr.downloadHandler.text);
+        }
+    }
+----------
+
+DELETE request:
+
+    void Start()
+    {
+        StartCoroutine(deleteRequest("http:///www.yoururl.com"));
+    }
+    
+    IEnumerator DeleteRequest(string url)
+    {
+        UnityWebRequest uwr = UnityWebRequest.Delete(url);
+        yield return uwr.SendWebRequest();
+    
+        if (uwr.isNetworkError)
+        {
+            Debug.Log("Error While Sending: " + uwr.error);
+        }
+        else
+        {
+            Debug.Log("Deleted");
+        }
+    }
+
+
+
+----------
+
+
+CSS Media Queries
+
+/ (320x480) iPhone (Original, 3G, 3GS) /@media only screen and (min-device-width: 320px) and (max-device-width: 480px) {    / insert styles here /} 
+
+/ (320x480) Smartphone, Portrait /@media only screen and (device-width: 320px) and (orientation: portrait) {    / insert styles here /} 
+
+/ (320x480) Smartphone, Landscape /@media only screen and (device-width: 480px) and (orientation: landscape) {    / insert styles here /}
+
+ / (480x800) Android /@media only screen and (min-device-width: 480px) and (max-device-width: 800px) {    / insert styles here /} 
+ 
+ / (640x960) iPhone 4 & 4S /@media only screen and (min-device-width: 640px) and (max-device-width: 960px) {    / insert styles here /}
+ 
+  / (720x1280) Galaxy Nexus, WXGA /@media only screen and (min-device-width: 720px) and (max-device-width: 1280px) {    / insert styles here /}
+  
+   /
+
+ (720x1280) Galaxy Nexus, Landscape /@media only screen and (min-device-width: 720px) and (max-device-width: 1280px) and (orientation: landscape) {    / insert styles here /} 
+   
+/ (1024x768) iPad 1 & 2, XGA /@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {    / insert styles here /} 
+
+/ (768x1024) iPad 1 & 2, Portrait /@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: portrait) {    / insert styles here /} 
+
+/ (1024x768) iPad 1 & 2, Landscape /@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: landscape) {    / insert styles here /}
+
+ / (2048x1536) iPad 3 /@media only screen and (min-device-width: 1536px) and (max-device-width: 2048px) {    / insert styles here /}
+ 
+  / (1280x720) Galaxy Note 2, WXGA /@media only screen and (min-device-width: 720px) and (max-device-width: 1280px) {    / insert styles here /}
+  
+ / (1366x768) WXGA Display /@media  screen and (max-width: 1366px) {    / insert styles here /} 
+ 
+ / (1280x1024) SXGA Display /@media  screen and (max-width: 1280px) {    / insert styles here /} 
+ 
+ / (1440x900) WXGA+ Display /@media  screen and (max-width: 1440px) {    / insert styles here /} 
+ 
+ / (1680x1050) WSXGA+ Display /@media  screen and (max-width: 1680px) {    / insert styles here /} 
+ 
+ / (1920x1080) Full HD Display /@media  screen and (max-width: 1920px) {    / insert styles here /}
+ 
+  / (1600x900) HD+ Display /@media  screen and (max-width: 1600px) {    / insert styles here /}
+
+
+----------
+
+
+MongoDB
+
+Mongo Atlas-Setup on the cloud
+Mongo Compass-Setup on the system
+SQL Mongo
+
+Tables------------------Collection
+Rows--------------------Document
+Columns-----------------Fields/Values
+
+** Database commands*
+
+View all database
+show dbs
+
+Create or switch database
+use "name of database"
+
+Check current db
+db
+
+Delete database
+db.dropdatabase()
+
+** Collection commands*
+
+Create new collection
+db.CreareCollection('name of the collection')
+
+Delete collection
+db."name of the collection".drop()
+
+** Data add/modify commands*
+
+Insert docs
+
+db."name of the collection".insert({
+'name':'Shubham',
+'number':'1'
+}
+)
+
+Insert multiple docs
+
+db."name of the collection".insertMany([{
+'name':'Shubham',
+'number':'1'
+},
+{
+'name':'Nautiyal',
+'number':'1',
+'age':'wont tell'
+},
+
+    ]
+    )
+    
+    
+
+Show all docs
+db.'collection name'.find()
+
+To arrange data in proper/clean order
+
+db.'collection name'.find().pretty()
+
+To search for a particular doc
+db.'collection name'.find({'property name':'value','property name':'value2'...})
+
+
+To search but with a limit
+db.'collection name'.find().limit('number of docs to find')
+
+
+To find number of docs
+db.'collection name'.find().count()
+db.'collection name'.find({'property name':'value'}).count()
+
+
+To sort docs
+db.'collection name'.find().sort({'property name':value})
+use value =1 for ascending order
+use value =-1 for descending order
+
+
+To find for only first occured doc
+db.'collection name'.findOne({'property name':value})
+
+
+To update a doc
+db.'collection name'.update({'property name':value},
+
+    {
+    'property name':value1,
+    'property name':value2...
+    }
+    )
+    
+    
+
+To update a doc else insert if not found
+
+      db.'collection name'.update({'property name':value},
+    
+    {
+    'property name':value1,
+    'property name':value2...
+    },{upsert:true})
+    
+
+To increament value
+db.'collection name'.update({'property name':value},
+{$inc: { 'property':value_to_increaseby}})
+
+
+To rename property
+
+    db.'collection name'.update({'property name':value},
+    {$rename: { 'property':'new property'}})
+    
+    db.'collection name'.update(
+    {$rename: { 'property':'new property'}})
+    
+    
+
+To remove db
+db.'collection name'.remove({'property':value})
+
+
+Filters for less than or greater than
+db.'collection name'.find({'property':{$ls:value}})
+db.'collection name'.find({'property':{$gt:value}})
+db.'collection name'.find({'property':{$lse:value}})
+db.'collection name'.find({'property':{$gte:value}})
+
+----------
