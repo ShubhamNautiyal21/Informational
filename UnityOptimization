@@ -1,0 +1,42 @@
+                                                     UNITY OPTIMIZATION
+                                                    ********************
+							
+
+	 UI OPTIMIZATION
+  *****************
+
+	-Have multiple Canvases(e.g., static and dynamic)
+	-Can turn off the Canvases that are not used
+	-Disable raycast for objects that not require click
+	-Avoid Layout groups, if possible
+	-Break UI into smaller components
+	-Use static batching
+	-Use occulsion culling
+	-Bake lights
+	-Change active state of childerns before changing the parent
+	-Avoid animators if possible
+	-Check prebake collision meshes and loaded shaders to cut loading time
+	-Avoid complicated meshes and colliders
+	-As strings are reference type and immutable, try to break the UI part into the header and content type, so only content type changes
+
+
+	 CODE OPTIMIZATION
+  *******************
+
+	-Cache References in awake/start
+	-Use Object Pooling
+	-Avoid .Find() and other expensive functions
+	-Use Addressables
+	-Avoid Garbage Collection
+	-Use Events to avoid unnecessary references
+	-Use Singleton pattern
+	-Use State based pattern
+	-Use Interfaces and Abstract classes
+	-For Updates and similar callbacks, compare the previous state of the varible to trigger a change
+	-Try to clear lists and arrays, before repopulting them
+	-Avoid Debugs from production releases
+	-Use StringBuilder Class to avoid Garbage Collection
+	-Avoid Boxing(Boxing is the term for what happens when a value-typed variable is used inplace of a reference-typed variable. Boxing usually occurs when we pass value-typed variables, such as ints or floats, to a function with object parameters such as Object.Equals().)
+	-From Coroutines, avoid new in every iteration, cache the value and pass it
+	-LINQ and Regular Expressions can create GC, due to boxing
+	-For forcefully trigger GC call System.GC.Collect() ( GC.Collect(), Resources.UnloadUnusedAssets())
