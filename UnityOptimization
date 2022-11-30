@@ -2,7 +2,7 @@
                                                     ********************
 							
 
-	 UI OPTIMIZATION
+   UI OPTIMIZATION
   *****************
 
 	-Have multiple Canvases(e.g., static and dynamic)
@@ -20,8 +20,8 @@
 	-As strings are reference type and immutable, try to break the UI part into the header and content type, so only content type changes
 
 
-	 CODE OPTIMIZATION
-  *******************
+ CODE OPTIMIZATION
+*******************
 
 	-Cache References in awake/start
 	-Use Object Pooling
