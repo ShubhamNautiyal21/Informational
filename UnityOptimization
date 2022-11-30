@@ -40,3 +40,12 @@
 	-From Coroutines, avoid new in every iteration, cache the value and pass it
 	-LINQ and Regular Expressions can create GC, due to boxing
 	-For forcefully trigger GC call System.GC.Collect() ( GC.Collect(), Resources.UnloadUnusedAssets())
+	
+	
+	
+	
+	
+	
+	
+	
+	
