@@ -6,7 +6,7 @@
   *****************
 
 	-Have multiple Canvases(e.g., static and dynamic)
-	-Can turn off the Canvases that are not used
+	-Can turn off the Canvases(do not set them false, instead set the canvas and raycaster component false and for child script components set this.enabled = false, to avoid callbacks) that are not used
 	-Disable raycast for objects that not require click
 	-Avoid Layout groups, if possible
 	-Break UI into smaller components
