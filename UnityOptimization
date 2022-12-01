@@ -22,7 +22,7 @@
 
  CODE OPTIMIZATION
 *******************
-
+	-Avoid Global classes that contain all the variable references
 	-Cache References in awake/start
 	-Use Object Pooling
 	-Avoid .Find() and other expensive functions
