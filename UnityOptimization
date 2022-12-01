@@ -43,7 +43,40 @@
 	
 	
 	
+						 GENERAL CLEAN CODE PRACTICES
+		     			       ********************************
+
+	-Name variables properly
+		nameOfVariable,
+		_privateMember,
+		CONSTANT_VARIABLE or PROPERT_VARIABLE
+
+	-Avoid logs in releases
+
+	-Avoid Side-effects in functions
+	If a function is authenticating the user, it should not initialize the values, it should just return if user is authenticated or not.
+
+	-Write smaller functions
+  
+	-Reuse Code
+
+	-Use classes, inheritance(subset relationships) and composition(connection but not subsets) in js
+
+	- S(Single-responsibility Principle)
+	classes or functions should avoid side-effects and should only do one task.
 	
+	- O(Open-closed Principle)
+	classes are open to extend but closed to change properties, directly
+
+	- L(Liskov Substitution Principle)
+	Objects of subclasses to behave the same way as the objects of superclass(should get the correct output for variations)
+	
+	- I(Interface Segregation Principle)
+ 	Client should never be forced to implement an interface that it doesn’t use, or clients shouldn’t be forced to depend on methods they do not use(incase of interface, break the interface so that classes could implement them accourdingly without implementing non requiring things)
+
+	- D(Dependency Inversion Principle)
+	Avoid tight coupling between High-level modules and  low-level modules. Both should depend on abstractions (for example, interfaces)
+
 	
 	
 	
