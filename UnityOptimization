@@ -103,10 +103,11 @@
 	classes or functions should avoid side-effects and should only do one task.
 	
 	- O(Open-closed Principle)
-	classes are open to extend but closed to change properties, directly
+	classes are open to extend but closed to change properties, directly.
 
 	- L(Liskov Substitution Principle)
-	Objects of subclasses to behave the same way as the objects of superclass(should get the correct output for variations)
+	Objects of subclasses to behave the same way as the objects of superclass(should get the correct output for variations),
+	parent class can replace child class without causing any issue.
 	
 	- I(Interface Segregation Principle)
  	Client should never be forced to implement an interface that it doesn’t use, or clients shouldn’t be forced to depend on methods they do not use(incase of interface, break the interface so that classes could implement them accourdingly without implementing non requiring things)
